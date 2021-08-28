@@ -1,0 +1,50 @@
+{
+  "name": "console-gitops-plugin",
+  "description": "OpenShift Console plugin for GitOps",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "yarn clean && NODE_ENV=production yarn ts-node ./node_modules/.bin/webpack --mode=production",
+    "build-dev": "yarn clean && yarn ts-node ./node_modules/.bin/webpack --mode=development",
+    "http-server": "./http-server.sh ./dist",
+    "ts-node": "ts-node -O '{\"module\":\"commonjs\"}' -I '/node_modules/(?!(@openshift-console)/)/'"
+  },
+  "devDependencies": {
+    "@openshift-console/dynamic-plugin-sdk": "0.0.0-alpha14",
+    "@types/node": "15.12.4",
+    "@types/react": "16.9.0",
+    "@patternfly/react-core": "4.147.0",
+    "@patternfly/react-icons": "4.11.8",
+    "@types/react-helmet": "^5.0.5",
+    "comment-json": "4.1.0",
+    "copy-webpack-plugin": "5.1.x",
+    "http-server": "0.12.x",
+    "react": "16.9.0",
+    "read-pkg": "5.x",
+    "ts-loader": "6.2.2",
+    "ts-node": "5.0.1",
+    "typescript": "3.8.3",
+    "webpack": "5.0.0-beta.16",
+    "webpack-cli": "4.5.x",
+    "i18next": "^19.8.3",
+    "i18next-browser-languagedetector": "^6.0.1",
+    "i18next-conv": "^10.1.0",
+    "i18next-http-backend": "^1.0.21",
+    "lodash-es": "^4.17.21",
+    "react-helmet": "^6.1.0",
+    "react-i18next": "^11.7.3"
+  },
+  "consolePlugin": {
+    "name": "console-gitops-plugin",
+    "version": "1.0.0",
+    "displayName": "GitOps Plugin",
+    "description": "OpenShift Console plugin for Gitops.",
+    "exposedModules": {
+      "environments": "./components/GitOpsListPage"
+    },
+    "dependencies": {
+      "@console/pluginAPI": "*"
+    }
+  }
+}
