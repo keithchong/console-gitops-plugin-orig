@@ -58,7 +58,7 @@ oc edit console.operator.openshift.io cluster
 # ...
 spec:
   plugins:
-    - console-telemetry-plugin
+    - console-gitops-plugin
 # ...
 ```
 
@@ -68,13 +68,13 @@ Following commands should be executed in Console repository root.
 
 1. Build the image:
    ```sh
-   docker build -t quay.io/$USER/console-telemetry-plugin .
+   docker build -t quay.io/$USER/console-gitops-plugin .
    ```
 2. Run the image:
    ```sh
-   docker run -it -p 9001:9001 quay.io/$USER/console-telemetry-plugin
+   docker run -it -p 9001:9001 quay.io/$USER/console-gitops-plugin
    ```
 3. Push the image to image registry:
    ```sh
-   docker push quay.io/$USER/console-telemetry-plugin
+   docker push quay.io/$USER/console-gitops-plugin
    ```
