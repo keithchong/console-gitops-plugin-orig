@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as _ from 'lodash-es';
 import Helmet from 'react-helmet';
 import { useTranslation } from 'react-i18next';
-import { useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk/api';
+import { useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk';
 
 import { fetchAppGroups } from './utils/gitops-utils';
 // import { fetchAppGroups, /* fetchAllAppGroups, getManifestURLs  getPipelinesBaseURI */ } from './utils/gitops-utils';
@@ -18,7 +18,7 @@ import { GitOpsAppGroupData } from './utils//gitops-types';
 // import './GitOpsListPage.scss';
 
 // const projectRes = { isList: true, kind: ProjectModel.kind, optional: true };
-const projectRes = { isList: true, kind: "Project", optional: true };
+const projectRes = { isList: true, kind: 'Project', optional: true };
 
 const GitOpsListPage: React.FC = () => {
   const [appGroups, setAppGroups] = React.useState(null);
@@ -28,25 +28,25 @@ const GitOpsListPage: React.FC = () => {
   // const [namespaces, nsLoaded, nsError] = useK8sWatchResource<K8sResourceKind[]>(projectRes);
   // const [secretNS, secretName] = useDefaultSecret();
   // const baseURL = getPipelinesBaseURI(secretNS, secretName);
-  
+
   // const baseURL = '/api/gitops/pipelines';
   const { t } = useTranslation();
 
   // React.useEffect(() => {
   //   let ignore = false;
 
-    // const getAppGroups = async () => {
-    //   // if (nsLoaded) {
-    //     // const manifestURLs = (/*!nsError &&*/ getManifestURLs(namespaces)) || [];
-    //     const manifestURLs = ['https://gitlab.com/keithchong/gitops5.git?ref=HEAD'];
-    //     const [allAppGroups, emptyMsg] = await fetchAllAppGroups(baseURL, manifestURLs, t);
-    //     // if (ignore) return;
-    //     setAppGroups(allAppGroups);
-    //     setEmptyStateMsg(emptyMsg);
-    //   // }
-    // };
+  // const getAppGroups = async () => {
+  //   // if (nsLoaded) {
+  //     // const manifestURLs = (/*!nsError &&*/ getManifestURLs(namespaces)) || [];
+  //     const manifestURLs = ['https://gitlab.com/keithchong/gitops5.git?ref=HEAD'];
+  //     const [allAppGroups, emptyMsg] = await fetchAllAppGroups(baseURL, manifestURLs, t);
+  //     // if (ignore) return;
+  //     setAppGroups(allAppGroups);
+  //     setEmptyStateMsg(emptyMsg);
+  //   // }
+  // };
 
-    // getAppGroups();
+  // getAppGroups();
 
   //   return () => {
   //     ignore = true;
@@ -56,14 +56,9 @@ const GitOpsListPage: React.FC = () => {
     let ignore = false;
     const getAppGroups = async () => {
       if (nsLoaded && !appGroups) {
-        const allAppGroups = await fetchAppGroups('','');
+        const allAppGroups = await fetchAppGroups('', '');
         if (ignore) return;
-        setAppGroups(_.sortBy(
-          _.flatten(
-              _.map(allAppGroups)
-          ),
-          ['name']
-        ));  
+        setAppGroups(_.sortBy(_.flatten(_.map(allAppGroups)), ['name']));
       }
     };
 
@@ -75,17 +70,16 @@ const GitOpsListPage: React.FC = () => {
   return (
     <>
       This is the list of application environments!!!!
-      {_.map(appGroups, (appGroup: GitOpsAppGroupData) => appGroup && (
-          <>  
-          <div>
-            {appGroup.name}
-          </div>
-          <div>
-          </div>
-          </>
-        ),
+      {_.map(
+        appGroups,
+        (appGroup: GitOpsAppGroupData) =>
+          appGroup && (
+            <>
+              <div>{appGroup.name}</div>
+              <div></div>
+            </>
+          ),
       )}
-    
       <Helmet>
         <title>{t('plugin__console-gitops-plugin~Environments')}</title>
         {/* <>{appGroups}</> */}
@@ -106,7 +100,5 @@ const GitOpsListPage: React.FC = () => {
     </>
   );
 };
-
-
 
 export default GitOpsListPage;

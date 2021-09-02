@@ -1,7 +1,6 @@
 // @ts-ignore
-import { ConsoleRemotePlugin } from '@openshift-console/dynamic-plugin-sdk/webpack';
+import { ConsoleRemotePlugin } from '@openshift-console/dynamic-plugin-sdk/lib/index-webpack';
 import * as webpack from 'webpack';
-import * as CopyPlugin from 'copy-webpack-plugin';
 import * as path from 'path';
 
 const config: webpack.Configuration = {
@@ -30,14 +29,11 @@ const config: webpack.Configuration = {
       },
     ],
   },
-  plugins: [new ConsoleRemotePlugin(), new CopyPlugin([{ from: 'public' }])],
+  plugins: [new ConsoleRemotePlugin()],
   devtool: 'source-map',
   optimization: {
     chunkIds: 'named',
     minimize: false,
-  },
-  externals: {
-    '@openshift-console/dynamic-plugin-sdk/api': 'api',
   },
 };
 
