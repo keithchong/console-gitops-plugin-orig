@@ -1,6 +1,6 @@
 {
   "name": "console-gitops-plugin",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "displayName": "GitOps Plugin",
   "description": "OpenShift Console plugin for Gitops.",
   "dependencies": {

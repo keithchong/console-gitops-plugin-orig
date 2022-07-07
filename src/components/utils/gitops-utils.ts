@@ -1,21 +1,22 @@
+import { consoleFetchJSON } from '@openshift-console/dynamic-plugin-sdk';
 import { TFunction } from 'i18next';
 import * as _ from 'lodash-es';
 // import { coFetchJSON } from '@console/internal/co-fetch';
 // import { K8sResourceKind } from '@console/internal/module/k8s';
 import { GitOpsManifestData, GitOpsAppGroupData } from './gitops-types';
 
-// export const getManifestURLs = (namespaces: K8sResourceKind[]): string[] => {
-//   const annotation = 'app.openshift.io/vcs-uri';
-//   return _.uniq(
-//     namespaces
-//       .filter((ns) => {
-//         return !!ns.metadata?.annotations?.[annotation];
-//       })
-//       .map((ns) => {
-//         return ns.metadata?.annotations?.[annotation];
-//       }),
-//   );
-// };
+export const getManifestURLs = (namespaces: any[]): string[] => {
+  const annotation = 'app.openshift.io/vcs-uri';
+  return _.uniq(
+    namespaces
+      .filter((ns) => {
+        return !!ns.metadata?.annotations?.[annotation];
+      })
+      .map((ns) => {
+        return ns.metadata?.annotations?.[annotation];
+      }),
+  );
+};
 
 export const getApplicationsListBaseURI = () => {
   return `/api/gitops/applications`;
@@ -142,12 +143,12 @@ export const coFetchInternal = async (url, options, timeout, retry) => {
     delete allOptions.headers['X-CSRFToken'];
   }
 
-  const fetchPromise = await fetch(url, allOptions); // then((response : Response) =>
-  //   response.json()).then(data => {
-  //     console.log("DATA!!! is " + data);
-  //     console.log(JSON.stringify(data));
-  //    } // validateStatus(response, url, allOptions.method, retry),
-  // );
+  const fetchPromise = await fetch(url, allOptions).then((response : Response) =>
+    response.json()).then(data => {
+      console.log("DATA!!! is " + data);
+      console.log(JSON.stringify(data));
+     } // validateStatus(response, url, allOptions.method, retry),
+  );
 
   // return fetch promise directly if timeout <= 0
   if (timeout < 1) {
@@ -162,66 +163,87 @@ export const coFetchInternal = async (url, options, timeout, retry) => {
   return Promise.race([fetchPromise, timeoutPromise]);
 };
 
+
 export const fetchAppGroups = async (
   baseURL: string,
   manifestURL: string,
 ): Promise<GitOpsAppGroupData[]> => {
   let data: GitOpsManifestData;
   try {
-    // const newListApi = getApplicationsListBaseURI();
-    // const newListApi = 'https://cluster.openshift-gitops.svc:8080/applications';
-    // const manifestURL = 'https://gitlab.com/keithchong/gitops5.git?ref=main';
-    
-    // let data2 = await Axios.get('http://localhost:9000/api/gitops/applications?url=https://gitlab.com/keithchong/gitops5.git?ref=HEAD'); 
-    //https://cluster.openshift-gitops.svc:8080/api/gitops/applications');
-    // console.log("****** DATA is " + data);
-
-    // let url = 'https://cluster.openshift-gitops.svc:8080/applications?url=https://gitlab.com/keithchong/gitops5.git?ref=HEAD';
-    let url = 'api/gitops/applications?url=https://gitlab.com/keithchong/gitops5.git?ref=HEAD';
-    let options = {};
-    let attempt = 0;
-    let timeout = 60000;
-    let response;
-    let retry = true;
-    while (retry) {
-      retry = false;
-      attempt++;
-      try {
-        response = await coFetchInternal(url, options, timeout, attempt < 3);
-        data = await response.json();
-        console.log("DATA!!! is " + data);
-        return data?.applications ?? [];
-      } catch (e) {
-        if (e instanceof RetryError) {
-          retry = true;
-        } else {
-          // throw e;
-        }
-      }
-    }
-    console.log("****** DATA is " + data);
-    // data = await consoleFetchJSON(`${newListApi}?url=${manifestURL}`);
-    // data = await consoleFetchJSON(url, "GET", options, timeout);
-    // console.log("****** DATA is " + stringify(data));
-
-
+    const newListApi = getApplicationsListBaseURI();
+    console.log("fetching " + newListApi);
+    data = await consoleFetchJSON(`${newListApi}?url=${manifestURL}`);
   } catch (err) {
-    console.log("****** ERROR is " + err);
-
+    console.log("ERROR in fetch " + err);
     try {
-      // data = await coFetchJSON(`${baseURL}&url=${manifestURL}`);
+      data = await consoleFetchJSON(`${baseURL}&url=${manifestURL}`);
     } catch {} // eslint-disable-line no-empty
+    // Ignore and let empty data be handled by fetchAllAppGroups
   }
   return data?.applications ?? [];
 };
+
+// export const fetchAppGroups = async (
+//   baseURL: string,
+//   manifestURL: string,
+// ): Promise<GitOpsAppGroupData[]> => {
+//   let data: GitOpsManifestData;
+//   try {
+//     // const newListApi = getApplicationsListBaseURI();
+//     // const newListApi = 'https://cluster.openshift-gitops.svc:8080/applications';
+//     // const manifestURL = 'https://gitlab.com/keithchong/gitops5.git?ref=main';
+    
+//     // let data2 = await Axios.get('http://localhost:9000/api/gitops/applications?url=https://gitlab.com/keithchong/gitops5.git?ref=HEAD'); 
+//     //https://cluster.openshift-gitops.svc:8080/api/gitops/applications');
+//     // console.log("****** DATA is " + data);
+
+//     // let url = 'https://cluster.openshift-gitops.svc:8080/applications?url=https://gitlab.com/keithchong/gitops5.git?ref=HEAD';
+//     let url = 'api/gitops/applications?url=https://github.com/keithchong/gitops411.git?ref=HEAD';
+//     let options = {};
+//     let attempt = 0;
+//     let timeout = 60000;
+//     let response;
+//     let retry = true;
+//     while (retry) {
+//       retry = false;
+//       attempt++;
+//       try {
+//         response = await coFetchInternal(url, options, timeout, attempt < 3);
+//         data = await response.json();
+//         console.log("DATA!!! is " + data);
+//         return data?.applications ?? [];
+//       } catch (e) {
+//         if (e instanceof RetryError) {
+//           retry = true;
+//         } else {
+//           // throw e;
+//         }
+//       }
+//     }
+//     console.log("****** DATA is " + data);
+//     // data = await consoleFetchJSON(`${newListApi}?url=${manifestURL}`);
+//     // data = await consoleFetchJSON(url, "GET", options, timeout);
+//     // console.log("****** DATA is " + stringify(data));
+
+
+//   } catch (err) {
+//     console.log("****** ERROR is " + err);
+
+//     try {
+//       // data = await coFetchJSON(`${baseURL}&url=${manifestURL}`);
+//     } catch {} // eslint-disable-line no-empty
+//   }
+//   return data?.applications ?? [];
+// };
 
 
 export const fetchAllAppGroups = async (baseURL: string, manifestURLs: string[], t: TFunction) => {
   let emptyMsg: string = null;
   let allAppGroups: GitOpsAppGroupData[] = null;
+  console.log("Getting app groups ");
   if (baseURL) {
     if (_.isEmpty(manifestURLs)) {
-      emptyMsg = t('gitops-plugin~No GitOps manifest URLs found');
+      emptyMsg = "No GitOps manifest URLs found"; // t('gitops-plugin~No GitOps manifest URLs found');
     } else {
       try {
         allAppGroups = _.sortBy(
@@ -234,7 +256,7 @@ export const fetchAllAppGroups = async (baseURL: string, manifestURLs: string[],
         );
       } catch {} // eslint-disable-line no-empty
       if (_.isEmpty(allAppGroups)) {
-        emptyMsg = t('gitops-plugin~No Application groups found');
+        emptyMsg = 'gitops-plugin~No Application groups found'; // t('gitops-plugin~No Application groups found');
       }
     }
   }

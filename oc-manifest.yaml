@@ -89,3 +89,11 @@ spec:
     namespace: console-gitops-plugin
     port: 9001
     basePath: '/'
+  proxy:
+  - type: Service
+    alias: gitops
+    authorize: false
+    service:
+      name: applications
+      namespace: openshift-gitops
+      port: 8443
